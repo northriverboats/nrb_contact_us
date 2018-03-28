@@ -19,7 +19,9 @@
     "vue-axios": "^2.0.2",
     "vue-blu": "^0.1.9",
     "vue-form-generator": "^2.1.1",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vue-scrollto": "^2.11.0",
+    "vue-snotify": "^3.0.4"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

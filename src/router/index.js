@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Demo1 from '@/components/Demo1'
-import Demo2 from '@/components/Demo2'
+import Form from '@/components/Contact_form'
+import Thanks from '@/components/Thanks'
 
 Vue.use(Router)
 
@@ -13,13 +13,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Demo1',
-      component: Demo1
+      name: 'Form',
+      component: Form
     },
     {
-      path: '/pg2',
-      name: 'Demo2',
-      component: Demo2
+      path: '/thanks',
+      name: 'Thanks',
+      component: Thanks
     }
   ]
 })
