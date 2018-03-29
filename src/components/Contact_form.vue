@@ -32,20 +32,20 @@ export default {
     return {
       wp_info: window.wp_info,
       model: {
-        name: 'Fred Warren',
+        name: '',
         company: '',
         address: '',
         city: '',
-        state: 'OR',
-        zip: '97470',
-        phone: '541-671-7517',
+        state: '',
+        zip: '',
+        phone: '',
         email: '',
         subject: 'Parts',
         boat_model: '',
         boat_length: '',
         boat_use: '',
         hull_serial_number: '',
-        comments: 'This is a quick comment.'
+        comments: ''
       },
       schema: {
         fields: [
