@@ -124,10 +124,9 @@ function email_contact_form($params) {
 
     $mail = new PHPMailer(true);
     $mail->setFrom('website@northriverboats.com', 'North River Website');
-    $mail->addAddress('fredw@northriverboats.com', 'Fred Warren');
     $persons = explode(" ; ",dealer2email($params['dealership'],$params['subject']));
     foreach ($persons as $person) {
-      $body .= "<p>".$person."</p>";
+        $mail->addAddress($person);
     }
     $mail->Subject = 'NRB Customer Contact - ' . $params['name'];
     $mail->msgHTML($body);
