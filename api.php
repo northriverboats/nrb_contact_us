@@ -14,6 +14,12 @@ function nrb_contact_us_register_routes() {
        'methods'  => WP_REST_Server::EDITABLE,
        'callback' => 'nrb_contact_us_serve_route_contact_create'
    ) );
+
+   register_rest_route( 'nrb_contact_us', 'mail/(?P<dealer>[\s\S]+)/(?P<role>[\s\S]+)', array(
+       'methods'  => WP_REST_Server::READABLE,
+       'callback' => 'nrb_contact_us_serve_route_mail'
+     ) );
+
 }
 
 /**
@@ -40,6 +46,12 @@ function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
         email_error($params);
     }
     return $response;
+}
+
+
+function nrb_contact_us_serve_route_mail( WP_REST_Request $request ) {
+    $result['email'] = dealer2email($request['dealer'],$request['role']);
+    return $result;
 }
 
 
@@ -113,8 +125,10 @@ function email_contact_form($params) {
     $mail = new PHPMailer(true);
     $mail->setFrom('website@northriverboats.com', 'North River Website');
     $mail->addAddress('fredw@northriverboats.com', 'Fred Warren');
-    // $mail->addAddress('saral@northriverboats.com', 'Sara Lynn');
-    // $mail->addAddress('w.brokenbourgh@pismotek.com', 'Will Brokenbourgh');
+    $persons = explode(" ; ",dealer2email($params['dealership'],$params['subject']));
+    foreach ($persons as $person) {
+      $body .= "<p>".$person."</p>";
+    }
     $mail->Subject = 'NRB Customer Contact - ' . $params['name'];
     $mail->msgHTML($body);
 
@@ -308,3 +322,36 @@ function zipcode2dealer($postal) {
     }
     return "Factory";
 } // zipcode2dealer
+
+
+/**
+ * Generate a list of email address to contact at a dealership
+ *   the store manager is always added to the list of email addresses
+ *
+ * @param String $dealer Dealer for whom we want contact information.
+ *
+ * @param String $role Role at dealerhip we want addresses for
+ *
+ * @return Sting list of email addresses seperated with ;
+ */
+function dealer2email($dealer, $role) {
+    global $wpdb;
+    $sql = (
+        "SELECT DISTINCT dealer_group , email_sales, email_parts, email_service, email_manager, email_admin, email_warranty
+        FROM wp_nrb_dealers WHERE active = 1"
+    );
+    $response = $wpdb->get_results($sql);
+    $mylist = array();
+    foreach($response as $item) {
+        $manager = explode(" ; ", $item->email_manager);
+        $admin = implode(" ; ", array_unique(array_merge(explode(" ; ", $item->email_admin), $manager)));
+        $parts = implode(" ; ", array_unique(array_merge(explode(" ; ", $item->email_parts), $manager)));
+        $sales = implode(" ; ", array_unique(array_merge(explode(" ; ", $item->email_sales), $manager)));
+        $service = implode(" ; ", array_unique(array_merge(explode(" ; ", $item->email_service), $manager)));
+        $warranty = implode(" ; ", array_unique(array_merge(explode(" ; ", $item->email_warranty), $manager)));
+        $mylist[$item->dealer_group] = array("Parts" => $parts, "Sales" => $sales, "Service" => $service,
+          "Admin" => $admin, "Warranty" => $warranty, "Manager" => implode(" ; ", $manager));
+    }
+    return $mylist[$dealer][$role];
+}
+
