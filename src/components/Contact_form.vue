@@ -56,7 +56,8 @@ export default {
             model: 'name',
             placeholder: 'Your name',
             featured: false,
-            required: false,
+            required: true,
+            validator: VueFormGenerator.validators.string,
             styleClasses: 'col-xs-6'
           },
           {
