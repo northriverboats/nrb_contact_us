@@ -247,7 +247,7 @@ export default {
   },
   methods: {
     zipcode (value) {
-      if (this.model.state === 'NA' && value === '') {
+      if (this.model.state === 'Not Applicable' && value === '') {
         return []
       }
       if (this.model.state.match('AB|BC|MB|NB|NL|NS|NU|NT|ON|PE|QC|SK|YT')) {

@@ -33,7 +33,7 @@ function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
     global $wpdb;
     $params = array_map('stripslashes_deep',json_decode( file_get_contents( 'php://input' ), true ));
     $params['submitted'] = date("Y-m-d H:i:s");
-    if ($params['state'] == 'NA') {
+    if ($params['state'] == 'Not Applicable') {
         $params['dealership'] = 'Factory';
     } else {
         $params['dealership'] = zipcode2dealer($params['zip']);
@@ -337,7 +337,7 @@ function dealer2email($dealer, $role) {
     global $wpdb;
     $sql = (
         "SELECT DISTINCT dealer_group , email_sales, email_parts, email_service, email_manager, email_admin, email_warranty
-        FROM wp_nrb_dealers WHERE active = 1"
+        FROM wp_nrb_dealers ORDER BY dealer_group"
     );
     $response = $wpdb->get_results($sql);
     $mylist = array();
@@ -351,6 +351,16 @@ function dealer2email($dealer, $role) {
         $mylist[$item->dealer_group] = array("Parts" => $parts, "Sales" => $sales, "Service" => $service,
           "Admin" => $admin, "Warranty" => $warranty, "Manager" => implode(" ; ", $manager));
     }
-    return $mylist[$dealer][$role];
+    $result = $mylist[$dealer][$role];
+    if ($result !== '') {
+      if ($dealer !== 'Factory') {
+        if ($role == 'Sales') {
+          return $result . ' ; joed@northriverboats.com ; mikeb@northriverboats.com ; jordana@northriverboats.com';
+        }
+        return $result . ' ; joed@northriverboats.com ; saral@northriverboats.com'; 
+      }
+      return $result;
+    }
+    return 'fredw@northriverboats.com';
 }
 
