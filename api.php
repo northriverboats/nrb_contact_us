@@ -66,8 +66,6 @@ function nrb_contact_us_serve_route_commercial_create( WP_REST_Request $request 
     $params = array_map('stripslashes_deep',json_decode( file_get_contents( 'php://input' ), true ));
     $params['submitted'] = date("Y-m-d H:i:s");
     $params['hear_about_us'] = implode(", ", $params['hear_about_us']);
-    unset($params['current_boat']);
-    unset($params['rfq_needed']);
 
     if ($wpdb->insert('wp_nrb_contact_us_comm',$params) == 1) {
         $response['status'] = 'success';
