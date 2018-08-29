@@ -12,7 +12,7 @@
       <div class="col-md-8 text-right">
         <br />
         <div class="col-xs-12 text-right">
-          <button class="btn btn-primary" @click="mySubmit">Send</button>
+          <button class="btn btn-primary" @click="mySubmit" :disabled="isFormValid == 0">Send</button>
         </div>
       </div>
     </div>
@@ -31,6 +31,7 @@ export default {
   data () {
     return {
       wp_info: window.wp_info,
+      isFromValid: true,
       model: {
         name: '',
         company: '',
@@ -300,9 +301,10 @@ export default {
       if (this.$refs.contact.errors.length > 0) {
         return
       }
+      this.isFormValid = false
       // hull regex /^([nN][rR][bB])\s?(\d{5})\s?([a-lA-L]\d{3})/
       this.axios.post('contact', this.model).then((response) => {
-        this.$snotify.success('Contact Us from sent', 'Mail Sent')
+        this.$snotify.success('Contact Us form sent', 'Mail Sent')
         .on('destroyed', () => this.$router.push({name: 'Thanks'}))
       })
     },

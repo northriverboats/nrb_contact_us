@@ -20,6 +20,11 @@ function nrb_contact_us_register_routes() {
        'callback' => 'nrb_contact_us_serve_route_mail'
      ) );
 
+   register_rest_route( 'nrb_contact_us', 'commercial', array(
+       'methods'  => WP_REST_Server::EDITABLE,
+       'callback' => 'nrb_contact_us_serve_route_commercial_create'
+   ) );
+
 }
 
 /**
@@ -41,6 +46,32 @@ function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
     if ($wpdb->insert('wp_nrb_contact_us',$params) == 1) {
         $response['status'] = 'success';
         email_contact_form($params);
+    } else {
+        $response['status'] = 'failed';
+        email_error($params);
+    }
+    return $response;
+}
+
+
+/**
+ * Generate results for the /wp-json/nrb_contact_us/commercial route CREATE.
+ *
+ * @param WP_REST_Request $request Full details about the request.
+ *
+ * @return WP_REST_Response|WP_Error The response for the request.
+ */
+function nrb_contact_us_serve_route_commercial_create( WP_REST_Request $request ) {
+    global $wpdb;
+    $params = array_map('stripslashes_deep',json_decode( file_get_contents( 'php://input' ), true ));
+    $params['submitted'] = date("Y-m-d H:i:s");
+    $params['hear_about_us'] = implode(", ", $params['hear_about_us']);
+    unset($params['current_boat']);
+    unset($params['rfq_needed']);
+
+    if ($wpdb->insert('wp_nrb_contact_us_comm',$params) == 1) {
+        $response['status'] = 'success';
+        email_contact_comm_form($params);
     } else {
         $response['status'] = 'failed';
         email_error($params);
@@ -139,6 +170,71 @@ function email_contact_form($params) {
     }
 }
 
+function email_contact_comm_form($params) {
+    $nl = "\r";
+    $body  ='<table width="640" border="0" cellpadding="0" cellspacing="0" bordercolor="#999">'.$nl;
+
+    $body .='<tr>'.$nl;
+    $body .='<td width="17" align="left" valign="top" style="background-color:#0066cc"></td>'.$nl;
+    $body .='<td width="123" align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:24px; color:#FFF; background-color:#0066cc"><img src="https://www.northriverboats.com/logo-white2.png" width="205" height="75" /></td>'.$nl;
+    $body .='<td width="561" style="font-family:Arial, Helvetica, sans-serif; font-size:24px; color:#FFF; background-color:#0066cc; padding-left:15px;">NRB Commercial Contact</td>'.$nl;
+    $body .='<td width="17" align="left" valign="top" style="background-color:#0066cc"></td>'.$nl;
+    $body .='</tr>'.$nl;
+
+    $body .='<tr>'.$nl;
+    $body .='<td height="33" align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:9px; padding:8px; background-color:#0066cc">&nbsp;</td>'.$nl;
+    $body .='<td height="33" colspan="2" align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:9px; padding:8px; background-color:#ffffff"><table width="650" border="0" cellpadding="3" cellspacing="0">'.$nl;
+
+    $body .='<tr>'.$nl;
+    $body .='<td colspan="3" align="left" valign="top" bgcolor="#99FFFF" style="width:190px; background:#99FFFF; font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:bold; margin-left:10px;">NRB Customer Contact' . ' :: ' . date("m/d/Y") . '</td>'.$nl;
+    $body .='</tr>'.$nl;
+
+    $body .='<!-- Spacer Row -->'.$nl;
+    $body .='<tr>'.$nl;
+    $body .='<td colspan="3" align="left" valign="top" style="height:5px;"></td>'.$nl;
+    $body .='</tr>'.$nl;
+
+    foreach ($params as $title => $data) {
+        switch( $data ){
+            case 'override':
+                break;
+            default: // by default echo everything
+                $body .='<tr>'.$nl
+                  . '<td width="25%" align="left" valign="middle" bgcolor="#eef0f3" style="background-color:#eef0f3; Font-family:Arial, Helvetica, sans-serif; font-size:11px; font-weight:bold; margin-left:10px; border-top:thin; border-top-color:#999; border-top-style:solid; border-left:thin; border-left-color:#999; border-left-style:solid;">' . $title .'</td>'.$nl
+                  . '<td colspan="2" align="left" valign="middle" bgcolor="#eef0f3" style="height:22px; height:22px; background-color:#eef0f3; font-family:Arial, Helvetica, sans-serif; font-size:11px; margin-left:10px; border-top:thin; border-top-color:#999; border-top-style:solid; border-left:thin; border-left-color:#999; border-left-style:solid; border-right:thin; border-right-color:#999; border-right-style:solid;">' . nl2br($data) . '</td>'.$nl
+                  . '</tr>'.$nl
+                  . '<!-- Spacer Row -->'.$nl
+                  . '<tr>'.$nl
+                  . '<td colspan="3" align="left" valign="top" style="height:5px; border-top:thin; border-top-color:#999; border-top-style:solid"></td>'.$nl
+                  . '</tr>'.$nl;
+        }
+    }
+
+
+    $body .='</table></td>'.$nl;
+    $body .='<td height="33" align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:9px; padding:8px; background-color:#0066cc">&nbsp;</td>'.$nl;
+    $body .='</tr>'.$nl;
+
+    $body .='<tr>'.$nl;
+    $body .='<td height="20" colspan="4" align="left" valign="middle" style="background-color:#0066cc; color:#CCC; font-family:Verdana, Geneva, sans-serif; font-size:9px; padding-left:10px; text-decoration:none;"></td>'.$nl;
+    $body .='</tr>'.$nl;
+    $body .='</table>'.$nl;
+
+    $mail = new PHPMailer(true);
+    $mail->setFrom('website@northriverboats.com', 'North River Website');
+    $mail->addAddress('mikeb@northriverboats.com', 'Mike Blocher');
+    $mail->addAddress('jordan@northriverboats.com', 'Jordan Allen');
+    $mail->addAddress('fredw@northriverboats.com', 'Fred Warren');
+    $mail->Subject = 'NRB Commercial Contact - ' . $params['name'];
+    $mail->msgHTML($body);
+
+    try {
+        $mail->send();
+        // echo 'Message has been sent';
+    } catch (Exception $e) {
+        // echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
+    }
+}
 
 function zipcode2dealer($postal) {
 

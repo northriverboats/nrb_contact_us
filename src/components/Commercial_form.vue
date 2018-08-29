@@ -12,7 +12,7 @@
       <div class="col-md-8 text-right">
         <br />
         <div class="col-xs-12 text-right">
-          <button class="btn btn-primary" @click="mySubmit">Send</button>
+          <button class="btn btn-primary" @click="mySubmit" :disabled="isFormValid == 0">Send</button>
         </div>
       </div>
     </div>
@@ -31,6 +31,7 @@ export default {
   data () {
     return {
       wp_info: window.wp_info,
+      isFormValid: true,
       countries: [],
       states: [],
       model: {
@@ -379,6 +380,7 @@ export default {
       if (this.$refs.contact.errors.length > 0) {
         return
       }
+      // this.isFormValid = false
       if (this.model.country !== 'United States') {
         this.model.state = ''
         this.model.zip = ''
@@ -392,12 +394,10 @@ export default {
       if (!this.model.hear_about_us.includes('Other')) {
         this.model.hear_about_us_other = ''
       }
-      console.log(this.model)
-      // note on server delete current_boat rfq_needed
-      // this.axios.post('commercial', this.model).then((response) => {
-      //   this.$snotify.success('Contact Us from sent', 'Mail Sent')
-      //   .on('destroyed', () => this.$router.push({name: 'Thanks'}))
-      // })
+      this.axios.post('commercial', this.model).then((response) => {
+        this.$snotify.success('Contact Us form sent', 'Mail Sent')
+        .on('destroyed', () => this.$router.push({name: 'Thanks'}))
+      })
     },
     getCountries () {
       return [
