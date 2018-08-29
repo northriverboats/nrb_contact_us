@@ -8,9 +8,11 @@ import VueAxios from 'vue-axios'
 import Snotify from 'vue-snotify'
 import 'vue-snotify/styles/dark.css'
 import router from './router'
+import _ from 'lodash'
 
 Vue.config.productionTip = false
 
+Object.defineProperty(Vue.prototype, '$_', { value: _ })
 axios.defaults.baseURL = window.wp_info.rest_url + 'nrb_contact_us/'
 Vue.use(VueAxios, axios)
 Vue.use(Snotify)

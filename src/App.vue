@@ -145,6 +145,39 @@ input[type="number"] {
     color: #c8c8c8 !important;
 }
 
+.vue-form-generator .field-checklist .combobox {
+  overflow: auto !important;
+}
+
+.vue-form-generator .form-control .info {
+  margin: 0px !important;
+  border: 0px !important;
+  padding: 0px !important;
+  width: auto !important;
+}
+
+.list-row label {
+  color: #555 !important;
+  border-color: #000 !important;
+}
+
+.list-row label input[type="checkbox"] {
+  border-color: #000 !important;
+}
+
+.vue-form-generator .form-control .info:before {
+  content: none !important;
+}
+
+.vue-form-generator .field-checklist .combobox .dropList {
+  overflow: visible;
+  margin-bottom: 1em;
+}
+
+input[type="checkbox"]:checked:before {
+  background-image: url('images/check-icon-black.png');
+}
+
 /*
 .error label  {
     color: #e94442;

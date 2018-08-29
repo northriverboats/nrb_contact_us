@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-8 text-center">
         <h1 class="bm-1">RECREATIONAL BOAT INQUIRY</h1>
-        <h5><a href="/commercial-inquiry">CLICK HERE FOR COMMERCIAL BOAT INQUIRY</h5>
+        <h5><router-link :to="{name: 'Commercial'}">CLICK HERE FOR COMMERCIAL BOAT INQUIRY</router-link></h5>
         &nbsp;
       </div>
       <div class="col-md-8">
