@@ -35,8 +35,9 @@ export default {
       countries: [],
       states: [],
       model: {
-        name: '',
+        submitted: '',
         title: '',
+        name: '',
         agency_business: '',
         address: '',
         city: '',
@@ -62,6 +63,16 @@ export default {
           {
             type: 'input',
             inputType: 'text',
+            label: 'Title',
+            model: 'title',
+            placeholder: 'Title',
+            featured: false,
+            required: false,
+            styleClasses: 'col-xs-2'
+          },
+          {
+            type: 'input',
+            inputType: 'text',
             label: 'Name',
             model: 'name',
             placeholder: 'Your name',
@@ -73,21 +84,11 @@ export default {
           {
             type: 'input',
             inputType: 'text',
-            label: 'Title',
-            model: 'title',
-            placeholder: 'Title',
-            featured: false,
-            required: false,
-            styleClasses: 'col-xs-2'
-          },
-          {
-            type: 'input',
-            inputType: 'text',
             label: 'Company',
             model: 'agency_business',
             placeholder: 'Company Name or leave blank',
             featured: false,
-            required: false,
+            required: true,
             styleClasses: 'col-xs-5'
           },
           {
@@ -97,7 +98,7 @@ export default {
             model: 'address',
             placeholder: 'Address',
             featured: false,
-            required: false,
+            required: true,
             styleClasses: 'col-xs-12'
           },
           {
@@ -107,7 +108,7 @@ export default {
             model: 'city',
             placeholder: 'City',
             featured: false,
-            required: false,
+            required: true,
             styleClasses: 'col-xs-4'
           },
           {
@@ -130,7 +131,7 @@ export default {
             required: true,
             placeholder: 'State',
             visible: function (model) {
-              return model && model.country === 'United States'
+              return model && (model.country === 'United States' || model.country === 'Canada')
             },
             validator: VueFormGenerator.validators.string,
             styleClasses: 'col-xs-3'
@@ -144,7 +145,7 @@ export default {
             featured: true,
             required: true,
             visible: function (model) {
-              return model && model.country === 'United States'
+              return model && (model.country === 'United States' || model.country === 'Canada')
             },
             validator: this.zipcode,
             styleClasses: 'col-xs-2'
@@ -157,9 +158,8 @@ export default {
             placeholder: 'Phone Number',
             featured: false,
             required: true,
-            validator: this.phone,
-            styleClasses: 'col-xs-5',
-            hint: 'Phone or email is required'
+            validator: VueFormGenerator.validators.string,
+            styleClasses: 'col-xs-5'
           },
           {
             type: 'input',
@@ -169,8 +169,7 @@ export default {
             placeholder: 'E-Mail Address',
             required: true,
             validator: this.email,
-            styleClasses: 'col-xs-7',
-            hint: 'Phone or email is required'
+            styleClasses: 'col-xs-7'
           },
           {
             type: 'switch',
@@ -263,7 +262,7 @@ export default {
             max: 4092,
             rows: 8,
             featured: false,
-            required: true,
+            required: false,
             validator: VueFormGenerator.validators.string,
             styleClasses: 'col-xs-12'
           },
@@ -310,6 +309,7 @@ export default {
             model: 'hear_about_us_other',
             placeholder: 'How did you hear about us',
             featured: false,
+            required: true,
             maxlength: 128,
             validator: VueFormGenerator.validators.string,
             visible: function (model) {
@@ -346,12 +346,6 @@ export default {
       }
     },
     email (value) {
-      if (value === '' && this.model.phone === '') {
-        return ['Phone OR Email address is required']
-      }
-      if (value === '' && this.model.phone !== '') {
-        return []
-      }
       let re = /^(?:[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/
       if (!re.test(value)) {
         return ['Invalid Email Address']
@@ -359,29 +353,13 @@ export default {
         return []
       }
     },
-    phone (value) {
-      if (value === '' && this.model.email === '') {
-        return ['Phone OR Email address is required']
-      }
-      if (value === '' && this.model.email !== '') {
-        return []
-      }
-      var phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
-      if (phoneRegex.test(value)) {
-        this.model.phone = value.replace(phoneRegex, '($1) $2-$3')
-        return []
-      } else {
-        // Invalid phone number
-        return ['Invalid Phone Number']
-      }
-    },
     mySubmit () {
       this.$refs.contact.validate()
       if (this.$refs.contact.errors.length > 0) {
         return
       }
-      // this.isFormValid = false
-      if (this.model.country !== 'United States') {
+      this.isFormValid = false
+      if (!(this.model.country === 'United States' || this.model.country === 'Canada')) {
         this.model.state = ''
         this.model.zip = ''
       }

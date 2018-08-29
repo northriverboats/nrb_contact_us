@@ -199,14 +199,16 @@ function email_contact_comm_form($params) {
             case 'override':
                 break;
             default: // by default echo everything
-                $body .='<tr>'.$nl
-                  . '<td width="25%" align="left" valign="middle" bgcolor="#eef0f3" style="background-color:#eef0f3; Font-family:Arial, Helvetica, sans-serif; font-size:11px; font-weight:bold; margin-left:10px; border-top:thin; border-top-color:#999; border-top-style:solid; border-left:thin; border-left-color:#999; border-left-style:solid;">' . $title .'</td>'.$nl
-                  . '<td colspan="2" align="left" valign="middle" bgcolor="#eef0f3" style="height:22px; height:22px; background-color:#eef0f3; font-family:Arial, Helvetica, sans-serif; font-size:11px; margin-left:10px; border-top:thin; border-top-color:#999; border-top-style:solid; border-left:thin; border-left-color:#999; border-left-style:solid; border-right:thin; border-right-color:#999; border-right-style:solid;">' . nl2br($data) . '</td>'.$nl
-                  . '</tr>'.$nl
-                  . '<!-- Spacer Row -->'.$nl
-                  . '<tr>'.$nl
-                  . '<td colspan="3" align="left" valign="top" style="height:5px; border-top:thin; border-top-color:#999; border-top-style:solid"></td>'.$nl
-                  . '</tr>'.$nl;
+                if ($data) {
+                    $body .='<tr>'.$nl
+                      . '<td width="25%" align="left" valign="middle" bgcolor="#eef0f3" style="background-color:#eef0f3; Font-family:Arial, Helvetica, sans-serif; font-size:11px; font-weight:bold; margin-left:10px; border-top:thin; border-top-color:#999; border-top-style:solid; border-left:thin; border-left-color:#999; border-left-style:solid;">' . $title .'</td>'.$nl
+                      . '<td colspan="2" align="left" valign="middle" bgcolor="#eef0f3" style="height:22px; height:22px; background-color:#eef0f3; font-family:Arial, Helvetica, sans-serif; font-size:11px; margin-left:10px; border-top:thin; border-top-color:#999; border-top-style:solid; border-left:thin; border-left-color:#999; border-left-style:solid; border-right:thin; border-right-color:#999; border-right-style:solid;">' . nl2br($data) . '</td>'.$nl
+                     . '</tr>'.$nl
+                     . '<!-- Spacer Row -->'.$nl
+                     . '<tr>'.$nl
+                     . '<td colspan="3" align="left" valign="top" style="height:5px; border-top:thin; border-top-color:#999; border-top-style:solid"></td>'.$nl
+                     . '</tr>'.$nl;
+                }
         }
     }
 
