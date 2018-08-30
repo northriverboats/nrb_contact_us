@@ -68,6 +68,7 @@ export default {
             placeholder: 'Title',
             featured: false,
             required: false,
+            maxlength: 64,
             styleClasses: 'col-xs-2'
           },
           {
