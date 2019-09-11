@@ -450,6 +450,9 @@ function dealer2email($dealer, $role) {
     $result = $mylist[$dealer][$role];
     if ($result !== '') {
       if ($dealer !== 'Factory') {
+        if ($role == 'Parts') {
+          return $result . ' ; kene@northriverboats.com';
+        }
         if ($role == 'Sales') {
           return $result . ' ; joed@northriverboats.com ; mikeb@northriverboats.com ; jordana@northriverboats.com';
         }
