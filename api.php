@@ -87,7 +87,7 @@ function nrb_contact_us_serve_route_mail( WP_REST_Request $request ) {
 function email_error($params) {
   $body = nl2br(print_r($params,true));
   $mail = new PHPMailer(true);
-  $mail->setFrom('website@northriverboats.com', 'North River Website');
+  $mail->setFrom('webmaster@northriverboats.com', 'North River Website');
   $mail->addAddress('fredw@northriverboats.com', 'Fred Warren');
   $mail->Subject = 'Errors in NRB Customer Contact - ' . $params['name'];
   $mail->msgHTML($body);
@@ -152,7 +152,7 @@ function email_contact_form($params) {
     $body .='</table>'.$nl;
 
     $mail = new PHPMailer(true);
-    $mail->setFrom('website@northriverboats.com', 'North River Website');
+    $mail->setFrom('webmaster@northriverboats.com', 'North River Website');
     $persons = explode(" ; ",dealer2email($params['dealership'],$params['subject']));
     foreach ($persons as $person) {
         $mail->addAddress($person);
@@ -221,7 +221,7 @@ function email_contact_comm_form($params) {
     $body .='</table>'.$nl;
 
     $mail = new PHPMailer(true);
-    $mail->setFrom('website@northriverboats.com', 'North River Website');
+    $mail->setFrom('webmaster@northriverboats.com', 'North River Website');
     $mail->addAddress('mikeb@northriverboats.com', 'Mike Blocher');
     $mail->addAddress('jordan@northriverboats.com', 'Jordan Allen');
     $mail->addAddress('fredw@northriverboats.com', 'Fred Warren');
