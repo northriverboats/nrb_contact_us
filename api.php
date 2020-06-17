@@ -5,6 +5,19 @@ if ( ! defined( 'ABSPATH' ) ) wp_die( 'restricted access' );
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php';
+use Analog\Logger;
+
+$debug = substr($_SERVER['SERVER_ADDR'],0,9) == '10.10.200';
+$debug_console = True;
+
+if ($debug & $debug_console) {
+  Analog::handler (Analog\Handler\ChromeLogger::init ());
+} else {
+  $log_file = dirname(__FILE__).'/tmp/log.txt';
+  Analog::handler (Analog\Handler\File::init ($log_file));
+}
+
+
 $nl = "\n";
 
 add_action( 'rest_api_init', 'nrb_contact_us_register_routes' );
@@ -456,7 +469,7 @@ function dealer2email($dealer, $role) {
         if ($role == 'Sales') {
           return $result . ' ; joed@northriverboats.com ; mikeb@northriverboats.com ; jordana@northriverboats.com';
         }
-        return $result . ' ; joed@northriverboats.com ; saral@northriverboats.com'; 
+        return $result . ' ; joed@northriverboats.com ; saral@northriverboats.com';
       }
       return $result;
     }
