@@ -17,10 +17,32 @@ if ($debug & $debug_console) {
   Analog::handler (Analog\Handler\File::init ($log_file));
 }
 
-
 $nl = "\n";
 
+
 add_action( 'rest_api_init', 'nrb_contact_us_register_routes' );
+
+/*
+ * WP_REST_Server::READABLE   = ‘GET’
+ * WP_REST_Server::EDITABLE   = ‘POST, PUT, PATCH’
+ * WP_REST_Server::DELETABLE  = ‘DELETE’
+ * WP_REST_Server::ALLMETHODS = ‘GET, POST, PUT, PATCH, DELETE’
+ *
+ * https://code.tutsplus.com/tutorials/wp-rest-api-creating-updating-and-deleting-data--cms-24883
+ * https://generatewp.com/snippet/pnkkpve/
+ * https://webkul.com/blog/add-custom-rest-api-route-wordpress/
+ * https://developer.wordpress.org/reference/functions/register_rest_route/
+ *
+ */
+
+/**
+ * Register the /wp-json/nrb_contact_us/ routes
+ *
+ *    GET    nrb_contact_us/mail/(?P<dealer>[\s\S]+)/(?P<role>[\s\S]+)
+ *    POST   nrb_contact_us/contact
+ *    POST   nrb_contact_us/commercial
+ *
+ */
 
 function nrb_contact_us_register_routes() {
    register_rest_route( 'nrb_contact_us', 'contact', array(
