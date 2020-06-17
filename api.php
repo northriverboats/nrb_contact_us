@@ -45,15 +45,15 @@ add_action( 'rest_api_init', 'nrb_contact_us_register_routes' );
  */
 
 function nrb_contact_us_register_routes() {
-   register_rest_route( 'nrb_contact_us', 'contact', array(
-       'methods'  => WP_REST_Server::EDITABLE,
-       'callback' => 'nrb_contact_us_serve_route_contact_create'
-   ) );
-
    register_rest_route( 'nrb_contact_us', 'mail/(?P<dealer>[\s\S]+)/(?P<role>[\s\S]+)', array(
        'methods'  => WP_REST_Server::READABLE,
        'callback' => 'nrb_contact_us_serve_route_mail'
      ) );
+
+   register_rest_route( 'nrb_contact_us', 'contact', array(
+       'methods'  => WP_REST_Server::EDITABLE,
+       'callback' => 'nrb_contact_us_serve_route_contact_create'
+   ) );
 
    register_rest_route( 'nrb_contact_us', 'commercial', array(
        'methods'  => WP_REST_Server::EDITABLE,
@@ -61,6 +61,20 @@ function nrb_contact_us_register_routes() {
    ) );
 
 }
+
+
+/**
+ * Generate results for the /wp-json/nrb_contact_us/mail route GET.
+ *
+ * @param WP_REST_Request $request Full details about the request.
+ *
+ * @return WP_REST_Response|WP_Error The response for the request.
+ */
+function nrb_contact_us_serve_route_mail( WP_REST_Request $request ) {
+    $result['email'] = dealer2email($request['dealer'],$request['role']);
+    return $result;
+}
+
 
 /**
  * Generate results for the /wp-json/nrb_contact_us/contact route CREATE.
@@ -110,12 +124,6 @@ function nrb_contact_us_serve_route_commercial_create( WP_REST_Request $request 
         email_error($params);
     }
     return $response;
-}
-
-
-function nrb_contact_us_serve_route_mail( WP_REST_Request $request ) {
-    $result['email'] = dealer2email($request['dealer'],$request['role']);
-    return $result;
 }
 
 
