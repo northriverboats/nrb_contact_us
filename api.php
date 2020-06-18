@@ -66,6 +66,10 @@ function nrb_contact_us_register_routes() {
  */
 function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
     global $wpdb;
+    global $debug;
+
+    // $params = array_map('stripslashes_deep', $_POST);
+    // $params = array_map('stripslashes_deep', json_decode($_POST. true);
     $params = array_map('stripslashes_deep',json_decode( file_get_contents( 'php://input' ), true ));
     $params['submitted'] = date("Y-m-d H:i:s");
     if ($params['state'] == 'Not Applicable') {
@@ -93,6 +97,10 @@ function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
  */
 function nrb_contact_us_serve_route_commercial_create( WP_REST_Request $request ) {
     global $wpdb;
+    global $debug;
+
+    // $params = array_map('stripslashes_deep', $_POST);
+    // $params = array_map('stripslashes_deep', json_decode($_POST. true);
     $params = array_map('stripslashes_deep',json_decode( file_get_contents( 'php://input' ), true ));
     $params['submitted'] = date("Y-m-d H:i:s");
     $params['hear_about_us'] = implode(", ", $params['hear_about_us']);
