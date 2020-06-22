@@ -12,7 +12,7 @@
       <div class="col-md-8 text-right">
         <br />
         <div class="col-xs-12 text-right">
-          <button class="btn btn-primary" @click="mySubmit" :disabled="isFormValid == 0">Send</button>
+          <button class="btn btn-primary" @click="mySubmit" :disabled="submit_locked">Send</button>
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@ export default {
   data () {
     return {
       wp_info: window.wp_info,
-      isFromValid: true,
+      submit_locked: false,
       model: {
         name: '',
         company: '',
@@ -242,7 +242,7 @@ export default {
       },
       formOptions: {
         validateAfterLoad: false,
-        validateAfterChanged: false
+        validateAfterChanged: true
       }
     }
   },
@@ -301,7 +301,7 @@ export default {
       if (this.$refs.contact.errors.length > 0) {
         return
       }
-      this.isFormValid = false
+      this.submit_locked = true
       // hull regex /^([nN][rR][bB])\s?(\d{5})\s?([a-lA-L]\d{3})/
       this.axios.post('contact', this.model).then((response) => {
         this.$snotify.success('Contact Us form sent', 'Mail Sent')
