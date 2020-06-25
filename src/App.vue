@@ -6,17 +6,17 @@
 </template>
 
 <script>
+
 export default {
-  name: 'app'
+  name: 'App',
 }
 </script>
 
 <style>
-#app {
+pp {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  # text-align: center;
   color: #2c3e50;
   /* margin-top: 30px; */
 }
@@ -168,7 +168,6 @@ input[type="number"] {
 .vue-form-generator .form-control .info:before {
   content: none !important;
 }
-
 .vue-form-generator .field-checklist .combobox .dropList {
   overflow: visible;
   margin-bottom: 1em;
@@ -322,7 +321,7 @@ input[type="checkbox"]:checked:before {
   margin-top: 0.25rem !important;
 }
 
-.mr-1,
+mr-1,
 .mx-1 {
   margin-right: 0.25rem !important;
 }
@@ -494,7 +493,6 @@ input[type="checkbox"]:checked:before {
 .px-2 {
   padding-right: 0.5rem !important;
 }
-
 .pb-2,
 .py-2 {
   padding-bottom: 0.5rem !important;

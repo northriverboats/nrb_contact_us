@@ -12,7 +12,7 @@
       <div class="col-md-8 text-right">
         <br />
         <div class="col-xs-12 text-right">
-          <button class="btn btn-primary" @click="mySubmit" :disabled="isFormValid == 0">Send</button>
+          <button class="btn btn-primary" @click="mySubmit" :disabled="submit_locked">Send</button>
         </div>
       </div>
     </div>
@@ -20,14 +20,9 @@
 </template>
 
 <script>
-import VueFormGenerator from 'vue-form-generator'
-import 'vue-form-generator/dist/vfg.css'
 
 export default {
   name: 'Demo',
-  components: {
-    'vue-form-generator': VueFormGenerator.component
-  },
   data () {
     return {
       wp_info: window.wp_info,
@@ -79,7 +74,7 @@ export default {
             placeholder: 'Your name',
             featured: false,
             required: true,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-5'
           },
           {
@@ -120,7 +115,7 @@ export default {
             featured: false,
             required: true,
             placeholder: 'State',
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-3'
           },
           {
@@ -134,7 +129,7 @@ export default {
             visible: function (model) {
               return model && (model.country === 'United States' || model.country === 'Canada')
             },
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-3'
           },
           {
@@ -148,7 +143,7 @@ export default {
             visible: function (model) {
               return model && (model.country === 'United States' || model.country === 'Canada')
             },
-            validator: this.zipcode,
+            validator: 'zipcode',
             styleClasses: 'col-xs-2'
           },
           {
@@ -159,7 +154,7 @@ export default {
             placeholder: 'Phone Number',
             featured: false,
             required: true,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-5'
           },
           {
@@ -169,7 +164,7 @@ export default {
             model: 'email',
             placeholder: 'E-Mail Address',
             required: true,
-            validator: this.email,
+            validator: 'email',
             styleClasses: 'col-xs-7'
           },
           {
@@ -193,7 +188,7 @@ export default {
             visible: function (model) {
               return model && model.rfq_needed
             },
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-12'
           },
           {
@@ -204,7 +199,7 @@ export default {
             placeholder: 'Intended Use',
             featured: false,
             maxlength: 128,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-12'
           },
           {
@@ -216,7 +211,7 @@ export default {
             max: 4092,
             rows: 8,
             featured: false,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-12'
           },
           {
@@ -240,7 +235,7 @@ export default {
               return model && model.current_boat
             },
             maxlength: 128,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-12'
           },
           {
@@ -251,7 +246,7 @@ export default {
             placeholder: 'What model interests you most',
             featured: false,
             maxlength: 128,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-12'
           },
           {
@@ -264,7 +259,7 @@ export default {
             rows: 8,
             featured: false,
             required: false,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-12'
           },
           {
@@ -281,7 +276,7 @@ export default {
             featured: false,
             required: true,
             placeholder: 'State',
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-12'
           },
           {
@@ -312,7 +307,7 @@ export default {
             featured: false,
             required: true,
             maxlength: 128,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             visible: function (model) {
               return model && model.hear_about_us.includes('Other')
             },
@@ -322,44 +317,17 @@ export default {
       },
       formOptions: {
         validateAfterLoad: false,
-        validateAfterChanged: false
+        validateAfterChanged: true
       }
     }
   },
   methods: {
-    zipcode (value) {
-      if (this.model.state === 'Not Applicable' && value === '') {
-        return []
-      }
-      if (this.model.state.match('AB|BC|MB|NB|NL|NS|NU|NT|ON|PE|QC|SK|YT')) {
-        let re = '[ABCEGHJKLMNPRSTVXY]d[ABCEGHJ-NPRSTV-Z][ ]?d[ABCEGHJ-NPRSTV-Z]d'
-        if (!re.test(value)) {
-          return ['Invalid Postal Code']
-        } else {
-          return []
-        }
-      }
-      let re = /(^\d{5}$)|(^\d{5}-\d{4}$)/
-      if (!re.test(value)) {
-        return ['Invalid Zip Code.']
-      } else {
-        return []
-      }
-    },
-    email (value) {
-      let re = /^(?:[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/
-      if (!re.test(value)) {
-        return ['Invalid Email Address']
-      } else {
-        return []
-      }
-    },
     mySubmit () {
       this.$refs.contact.validate()
       if (this.$refs.contact.errors.length > 0) {
         return
       }
-      this.isFormValid = false
+      this.submit_locked = true
       if (!(this.model.country === 'United States' || this.model.country === 'Canada')) {
         this.model.state = ''
         this.model.zip = ''
@@ -373,7 +341,7 @@ export default {
       if (!this.model.hear_about_us.includes('Other')) {
         this.model.hear_about_us_other = ''
       }
-      this.axios.post('commercial', this.model).then((response) => {
+      this.axios.post('commercial', this.model).then((response) => { // eslint-disable-line no-unused-vars
         this.$snotify.success('Contact Us form sent', 'Mail Sent')
         .on('destroyed', () => this.$router.push({name: 'Thanks'}))
       })

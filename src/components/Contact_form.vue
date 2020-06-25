@@ -20,14 +20,9 @@
 </template>
 
 <script>
-import VueFormGenerator from 'vue-form-generator'
-import 'vue-form-generator/dist/vfg.css'
 
 export default {
   name: 'Demo',
-  components: {
-    'vue-form-generator': VueFormGenerator.component
-  },
   data () {
     return {
       wp_info: window.wp_info,
@@ -58,7 +53,7 @@ export default {
             placeholder: 'Your name',
             featured: false,
             required: true,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-6'
           },
           {
@@ -99,7 +94,7 @@ export default {
             featured: false,
             required: true,
             placeholder: 'State',
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-3'
           },
           {
@@ -110,7 +105,7 @@ export default {
             placeholder: 'Postal Code',
             featured: true,
             required: true,
-            validator: this.zipcode,
+            validator: 'zipcode',
             styleClasses: 'col-xs-3'
           },
           {
@@ -121,7 +116,7 @@ export default {
             placeholder: 'Phone Number',
             featured: false,
             required: true,
-            validator: this.phone,
+            validator: 'phone',
             styleClasses: 'col-xs-5',
             hint: 'Phone or email is required'
           },
@@ -132,7 +127,7 @@ export default {
             model: 'email',
             placeholder: 'E-Mail Address',
             required: true,
-            validator: this.email,
+            validator: 'emailVal',
             styleClasses: 'col-xs-7',
             hint: 'Phone or email is required'
           },
@@ -222,7 +217,7 @@ export default {
             ],
             featured: false,
             required: true,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-3'
           },
           {
@@ -235,7 +230,7 @@ export default {
             rows: 8,
             featured: false,
             required: true,
-            validator: VueFormGenerator.validators.string,
+            validator: 'string',
             styleClasses: 'col-xs-12'
           }
         ]
@@ -247,55 +242,6 @@ export default {
     }
   },
   methods: {
-    zipcode (value) {
-      if (this.model.state === 'Not Applicable' && value === '') {
-        return []
-      }
-      if (this.model.state.match('AB|BC|MB|NB|NL|NS|NU|NT|ON|PE|QC|SK|YT')) {
-        let re = '[ABCEGHJKLMNPRSTVXY]d[ABCEGHJ-NPRSTV-Z][ ]?d[ABCEGHJ-NPRSTV-Z]d'
-        if (!re.test(value)) {
-          return ['Invalid Postal Code']
-        } else {
-          return []
-        }
-      }
-      let re = /(^\d{5}$)|(^\d{5}-\d{4}$)/
-      if (!re.test(value)) {
-        return ['Invalid Zip Code.']
-      } else {
-        return []
-      }
-    },
-    email (value) {
-      if (value === '' && this.model.phone === '') {
-        return ['Phone OR Email address is required']
-      }
-      if (value === '' && this.model.phone !== '') {
-        return []
-      }
-      let re = /^(?:[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/
-      if (!re.test(value)) {
-        return ['Invalid Email Address']
-      } else {
-        return []
-      }
-    },
-    phone (value) {
-      if (value === '' && this.model.email === '') {
-        return ['Phone OR Email address is required']
-      }
-      if (value === '' && this.model.email !== '') {
-        return []
-      }
-      var phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
-      if (phoneRegex.test(value)) {
-        this.model.phone = value.replace(phoneRegex, '($1) $2-$3')
-        return []
-      } else {
-        // Invalid phone number
-        return ['Invalid Phone Number']
-      }
-    },
     mySubmit () {
       this.$refs.contact.validate()
       if (this.$refs.contact.errors.length > 0) {
@@ -303,7 +249,7 @@ export default {
       }
       this.submit_locked = true
       // hull regex /^([nN][rR][bB])\s?(\d{5})\s?([a-lA-L]\d{3})/
-      this.axios.post('contact', this.model).then((response) => {
+      this.axios.post('contact', this.model).then((response) => { // eslint-disable-line no-unused-vars
         this.$snotify.success('Contact Us form sent', 'Mail Sent')
         .on('destroyed', () => this.$router.push({name: 'Thanks'}))
       })
