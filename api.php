@@ -8,16 +8,6 @@ use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php';
 use Analog\Logger;
 
-$debug = substr($_SERVER['SERVER_ADDR'],0,9) == '10.10.200';
-$debug_console = True;
-
-if ($debug & $debug_console) {
-    Analog::handler (Analog\Handler\ChromeLogger::init ());
-} else {
-    $log_file = dirname(__FILE__).'/tmp/log.txt';
-    Analog::handler (Analog\Handler\File::init ($log_file));
-}
-
 
 $nl = "\n";
 
@@ -68,9 +58,15 @@ function nrb_contact_us_register_routes() {
  */
 function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
     global $wpdb;
-    global $debug;
 
-    $params = array_map('stripslashes_deep',json_decode( file_get_contents( 'php://input' ), true ));
+    $log_file = dirname(__FILE__).'/logs/recreational.txt';
+    Analog::handler (Analog\Handler\File::init ($log_file));
+
+    $input = file_get_contents( 'php://input');
+    $json = json_decode($input, true);
+    $params = array_map('stripslashes_deep', $json);
+    Analog::info($input);
+
     $params['submitted'] = date("Y-m-d H:i:s");
 
     if ($params['state'] == 'Not Applicable') {
@@ -100,7 +96,14 @@ function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
  */
 function nrb_contact_us_serve_route_commercial_create( WP_REST_Request $request ) {
     global $wpdb;
-    global $debug;
+
+    $log_file = dirname(__FILE__).'/logs/commercial.txt';
+    Analog::handler (Analog\Handler\File::init ($log_file));
+
+    $input = file_get_contents( 'php://input');
+    $json = json_decode($input, true);
+    $params = array_map('stripslashes_deep', $json);
+    Analog::info($input);
 
     $params = array_map('stripslashes_deep',json_decode( file_get_contents( 'php://input' ), true ));
     $params['submitted'] = date("Y-m-d H:i:s");
@@ -135,7 +138,6 @@ function email_error($params) {
 
 
 function email_contact_form($params) {
-    global $debug;
     $nl = "\r";
     $body  ='<table width="640" border="0" cellpadding="0" cellspacing="0" bordercolor="#999">'.$nl;
 
@@ -188,7 +190,7 @@ function email_contact_form($params) {
     $mail = new PHPMailer(true);
     $mail->setFrom('webmaster@northriverboats.com', 'North River Website');
 
-    if ($debug) {
+    if (debug()) {
         $mail->addAddress("fredw@northriverboats.com", "Fredrick W. Warren");
     } else {
         $persons = explode(" ; ",dealer2email($params['dealership'],$params['subject']));
@@ -202,14 +204,11 @@ function email_contact_form($params) {
 
     try {
         $mail->send();
-        Analog::debug ("Message has been sent");
     } catch (Exception $e) {
-        Analog::debug ("Message could not be sent: " . $mail->ErrorInfo);
     }
 }
 
 function email_contact_comm_form($params) {
-    global $debug;
     $nl = "\r";
     $body  ='<table width="640" border="0" cellpadding="0" cellspacing="0" bordercolor="#999">'.$nl;
 
@@ -264,7 +263,7 @@ function email_contact_comm_form($params) {
     $mail = new PHPMailer(true);
     $mail->setFrom('webmaster@northriverboats.com', 'North River Website');
 
-    if ($debug) {
+    if (debug()) {
         $mail->addAddress("fredw@northriverboats.com", "Fredrick W. Warren");
     } else {
         $mail->addAddress('mikeb@northriverboats.com', 'Mike Blocher');
@@ -277,9 +276,7 @@ function email_contact_comm_form($params) {
 
     try {
         $mail->send();
-        Analog::log ("Message has been sent");
     } catch (Exception $e) {
-        Analog::log ("Message could not be sent: " . $mail->ErrorInfo);
     }
 }
 
@@ -510,3 +507,6 @@ function dealer2email($dealer, $role) {
     return 'fredw@northriverboats.com';
 }
 
+function debug() {
+  return substr($_SERVER['SERVER_ADDR'],0,9) == '10.10.200';
+}
