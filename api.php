@@ -281,7 +281,7 @@ function email_contact_comm_form($params) {
 }
 
 function zipcode2dealer($postal) {
-    Remove Spaces and Dashes from Canadian Postal Codes
+    # Remove Spaces and Dashes from Canadian Postal Codes
     if (substr($postal,3,1) == ' ' || substr($postal,3,1) =='-') {
         $postal = substr($postal,0,3) . substr($postal,4,3);
     }
