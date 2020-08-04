@@ -301,12 +301,14 @@ function zipcode2dealer($postal) {
 
     # Match United States Postal Codes
     $zip = array(
-        array(43000,"Factory"),
-        array(50000,"Riverfront Marina"),
+        array(10000,"Factory"),
+        array(19700,"Erie Marine"),
+        array(40000,"Factory"),
+        array(50000,"Erie Marine"),
+        array(53000,"Factory"),
+        array(55000,"Erie Marine"),
         array(60000,"Factory"),
-        array(66000,"Riverfront Marina"),
-        array(70000,"Factory"),
-        array(73000,"Riverfront Marina"),
+        array(63000,"Erie Marine"),
         array(83200,"Factory"),
         array(83500,"Idaho Marine"),
         array(83600,"Elephant Boys"),
