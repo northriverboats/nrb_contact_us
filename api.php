@@ -8,8 +8,8 @@ use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php';
 use Analog\Logger;
 
-$debug = array_change_key_case(getallheaders(), CASE_LOWER)['x-debug'] == 'true';
-$debug_console = True;
+// $debug = array_change_key_case(getallheaders(), CASE_LOWER)['x-debug'] == 'true';
+// $debug_console = True;
 
 if ($debug & $debug_console) {
   Analog::handler (Analog\Handler\ChromeLogger::init ());
@@ -40,13 +40,20 @@ add_action( 'rest_api_init', 'nrb_contact_us_register_routes' );
 /**
  * Register the /wp-json/nrb_contact_us/ routes
  *
+ *    GET    nrb_contact_us/foo
  *    POST   nrb_contact_us/contact
  *    POST   nrb_contact_us/commercial
  *
  */
 
 function nrb_contact_us_register_routes() {
-   register_rest_route( 'nrb_contact_us', 'contact', array(
+
+    register_rest_route( 'nrb_contact_us', 'foo', array(
+        'methods'  => WP_REST_Server::READABLE,
+        'callback' => 'nrb_contact_us_serve_route_foo',
+    ) ); 
+   
+    register_rest_route( 'nrb_contact_us', 'contact', array(
        'methods'  => WP_REST_Server::EDITABLE,
        'callback' => 'nrb_contact_us_serve_route_contact_create'
    ) );
@@ -57,6 +64,26 @@ function nrb_contact_us_register_routes() {
    ) );
 
 }
+
+
+/**
+ * Generate results for the /wp-json/nrb_contact_us/foo route.
+ *
+ * @param WP_REST_Request $request Full details about the request.
+ *
+ * @return WP_REST_Response|WP_Error The response for the request.
+ */
+function nrb_contact_us_serve_route_foo( WP_REST_Request $request ) {
+    global $wpdb;
+    global $debug;
+    global $debug_console;
+    
+    $response = [];
+    $response['debug'] = $debug;
+    $response['debugConsole'] = $debug_console;
+    return $response;
+}
+
 
 
 /**
@@ -487,6 +514,7 @@ function zipcode2dealer($postal) {
  */
 function dealer2email($dealer, $role) {
     global $wpdb;
+    
     $sql = (
         "SELECT DISTINCT dealer_group , email_sales, email_parts, email_service, email_manager, email_admin, email_warranty
         FROM wp_nrb_dealers ORDER BY dealer_group"
@@ -517,11 +545,4 @@ function dealer2email($dealer, $role) {
       return $result;
     }
     return 'fredw@northriverboats.com';
-}
-
-function dbg($message) {
-    global $debug;
-    if ($debug) {
-        Analog::log ($message);
-    }
 }
