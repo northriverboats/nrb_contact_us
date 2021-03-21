@@ -8,8 +8,18 @@ use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php';
 use Analog\Logger;
 
+$debug = array_change_key_case(getallheaders(), CASE_LOWER)['x-debug'] == 'true';
+$debug_console = True;
+
+if ($debug & $debug_console) {
+  Analog::handler (Analog\Handler\ChromeLogger::init ());
+} else {
+  $log_file = dirname(__FILE__).'/tmp/log.txt';
+  Analog::handler (Analog\Handler\File::init ($log_file));
+}
 
 $nl = "\n";
+
 
 
 add_action( 'rest_api_init', 'nrb_contact_us_register_routes' );
@@ -509,6 +519,9 @@ function dealer2email($dealer, $role) {
     return 'fredw@northriverboats.com';
 }
 
-function debug() {
-  return substr($_SERVER['SERVER_ADDR'],0,9) == '10.10.200';
+function dbg($message) {
+    global $debug;
+    if ($debug) {
+        Analog::log ($message);
+    }
 }
