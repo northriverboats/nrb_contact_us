@@ -5,22 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) wp_die( 'restricted access' );
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require 'vendor/autoload.php';
-use Analog\Logger;
-
-// $debug = array_change_key_case(getallheaders(), CASE_LOWER)['x-debug'] == 'true';
-// $debug_console = True;
-
-if ($debug & $debug_console) {
-  Analog::handler (Analog\Handler\ChromeLogger::init ());
-} else {
-  $log_file = dirname(__FILE__).'/tmp/log.txt';
-  Analog::handler (Analog\Handler\File::init ($log_file));
-}
-
 $nl = "\n";
-
-
 
 add_action( 'rest_api_init', 'nrb_contact_us_register_routes' );
 
@@ -81,6 +66,7 @@ function nrb_contact_us_serve_route_foo( WP_REST_Request $request ) {
     $response = [];
     $response['debug'] = $debug;
     $response['debugConsole'] = $debug_console;
+    dbg('works: contact_us');
     return $response;
 }
 
@@ -95,6 +81,7 @@ function nrb_contact_us_serve_route_foo( WP_REST_Request $request ) {
  */
 function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
     global $wpdb;
+    global $debug;
 
     $log_file = dirname(__FILE__).'/logs/recreational.txt';
     Analog::handler (Analog\Handler\File::init ($log_file));
@@ -112,12 +99,19 @@ function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
         $params['dealership'] = zipcode2dealer($params['zip']);
     }
 
+    $wpdb->query('START TRANSACTION');
     if ($wpdb->insert('wp_nrb_contact_us',$params) == 1) {
         $response['status'] = 'success';
         email_contact_form($params);
     } else {
         $response['status'] = 'failed';
         email_error($params);
+    }
+
+    if ($debug) {
+        $wpdb->query('ROLLBACK');
+    } else {
+        $wpdb->query('COMMIT');
     }
 
     return $response;
@@ -133,6 +127,7 @@ function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
  */
 function nrb_contact_us_serve_route_commercial_create( WP_REST_Request $request ) {
     global $wpdb;
+    global $debug;
 
     $log_file = dirname(__FILE__).'/logs/commercial.txt';
     Analog::handler (Analog\Handler\File::init ($log_file));
@@ -146,13 +141,21 @@ function nrb_contact_us_serve_route_commercial_create( WP_REST_Request $request 
     $params['submitted'] = date("Y-m-d H:i:s");
     $params['hear_about_us'] = implode(", ", $params['hear_about_us']);
 
+    $wpdb->query('START TRANSACTION');
     if ($wpdb->insert('wp_nrb_contact_us_comm',$params) == 1) {
         $response['status'] = 'success';
-        email_contact_comm_form($params);
+        email_contact_form($params);
     } else {
         $response['status'] = 'failed';
         email_error($params);
     }
+
+    if ($debug) {
+        $wpdb->query('ROLLBACK');
+    } else {
+        $wpdb->query('COMMIT');
+    }
+
     return $response;
 }
 
@@ -175,6 +178,8 @@ function email_error($params) {
 
 
 function email_contact_form($params) {
+    global $debug;
+
     $nl = "\r";
     $body  ='<table width="640" border="0" cellpadding="0" cellspacing="0" bordercolor="#999">'.$nl;
 
@@ -226,18 +231,18 @@ function email_contact_form($params) {
 
     $mail = new PHPMailer(true);
     $mail->setFrom('webmaster@northriverboats.com', 'North River Website');
+    $mail->msgHTML($body);
 
-    if (debug()) {
+    if ($debug) {
         $mail->addAddress("fredw@northriverboats.com", "Fredrick W. Warren");
+        $mail->Subject = 'NRB Customer Contact DEBUG - ' . $params['name'];
     } else {
         $persons = explode(" ; ",dealer2email($params['dealership'],$params['subject']));
         foreach ($persons as $person) {
             $mail->addAddress($person);
         }
+        $mail->Subject = 'NRB Customer Contact - ' . $params['name'];
     }
-
-    $mail->Subject = 'NRB Customer Contact - ' . $params['name'];
-    $mail->msgHTML($body);
 
     try {
         $mail->send();
@@ -246,6 +251,8 @@ function email_contact_form($params) {
 }
 
 function email_contact_comm_form($params) {
+    global $debug;
+
     $nl = "\r";
     $body  ='<table width="640" border="0" cellpadding="0" cellspacing="0" bordercolor="#999">'.$nl;
 
@@ -299,17 +306,17 @@ function email_contact_comm_form($params) {
 
     $mail = new PHPMailer(true);
     $mail->setFrom('webmaster@northriverboats.com', 'North River Website');
+    $mail->msgHTML($body);
 
-    if (debug()) {
+    if ($debug) {
         $mail->addAddress("fredw@northriverboats.com", "Fredrick W. Warren");
+        $mail->Subject = 'NRB Commercial Contact DEBUG - ' . $params['name'];
     } else {
         $mail->addAddress('mikeb@northriverboats.com', 'Mike Blocher');
         $mail->addAddress('jordan@northriverboats.com', 'Jordan Allen');
         $mail->addAddress('fredw@northriverboats.com', 'Fred Warren');
+        $mail->Subject = 'NRB Commercial Contact - ' . $params['name'];
     }
-
-    $mail->Subject = 'NRB Commercial Contact - ' . $params['name'];
-    $mail->msgHTML($body);
 
     try {
         $mail->send();
@@ -514,7 +521,7 @@ function zipcode2dealer($postal) {
  */
 function dealer2email($dealer, $role) {
     global $wpdb;
-    
+
     $sql = (
         "SELECT DISTINCT dealer_group , email_sales, email_parts, email_service, email_manager, email_admin, email_warranty
         FROM wp_nrb_dealers ORDER BY dealer_group"
