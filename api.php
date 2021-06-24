@@ -322,26 +322,43 @@ function email_contact_comm_form($params) {
         $mail->send();
     } catch (Exception $e) {
     }
-}
+} // email_contact_comm_form
 
-function zipcode2dealer($postal) {
-
+// return dealer or empty string
+function canadian_postal_codes($postal) {
+    // strip seperator if found
     if (substr($postal,3,1) == ' ' || substr($postal,3,1) =='-') {
         $postal = substr($postal,0,3) . substr($postal,4,3);
     }
 
-    if (preg_match('/[jJ][09][a-zA-Z](-| |)[0-9][a-zA-Z][0-9]/',$postal) or preg_match('/[xX][0][a-cA-C](-| |)[0-9][a-zA-Z][0-9]/',$postal)) {
+    // not a canadian postal code - return empty string
+    if (! preg_match('/^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$/', $postal)) {
+        return "";
+    }
+
+    // a canadian postal code - return dealer
+    if (preg_match('/[G][0-3,5-9]...|[H][0-5,7-9]...|[I][0-9]...|[K][0,1,6].../', $postal)) {
+        return "Drummondville Marine";
+    }
+    
+    if (preg_match('/[jJ][09][a-zA-Z](-| |)[0-9][a-zA-Z][0-9]/',$postal) or preg_match('/[xX][0][a-cA-C](-| |)[0-9][a-zA-Z][0-9]/', $postal)) {
         return "Avataa Outdoor Sports";
     }
 
-    if (preg_match('/[vV][2][kKlLmMnN](-| |)[0-9]/',$postal)) {
+    if (preg_match('/[vV][2][kKlLmMnN](-| |)[0-9]/', $postal)) {
         return "Prince George Motorsports";
     }
 
-    if (preg_match('/[a-zA-Z][0-9][a-zA-Z](-| |)[0-9][a-zA-Z][0-9]/',$postal)) {
+    if (preg_match('/[a-zA-Z][0-9][a-zA-Z](-| |)[0-9][a-zA-Z][0-9]/', $postal)) {
         return "Port Boat House";
     }
+    // if by some chane we end up here
+    return "";
 
+} // canadian_postal_codes
+
+// return dealer or empty string
+function united_state_zip_codes($postal) {
     $zip = array(
         array(10000,"Factory"), 
         array(19700,"Erie Marine"),
@@ -506,6 +523,15 @@ function zipcode2dealer($postal) {
         }
     }
     return "Factory";
+} // united_state_zip_codes
+
+function zipcode2dealer($postal) {
+    $dealer = canadian_postal_codes($postal);
+    if ($dealer == '') {
+        $dealer = united_state_zip_codes($postal);
+    }
+    return $dealer;
+
 } // zipcode2dealer
 
 
