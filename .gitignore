@@ -9,6 +9,7 @@ test/e2e/reports
 selenium-debug.log
 vendor/*
 log/*
+certs/*
 
 # Editor directories and files
 *.swp
