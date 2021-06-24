@@ -1,6 +1,9 @@
 {
     "require": {
+        "phpmailer/phpmailer": "^6.0",
+        "mpdf/mpdf": "^7.1",
+        "leeoniya/dump-r": "^2.1",
         "analog/analog": "^1.0",
-        "phpmailer/phpmailer": "^6.1"
+        "automattic/woocommerce": "^3.0"
     }
 }
