@@ -83,7 +83,7 @@ function nrb_contact_us_serve_route_contact_create( WP_REST_Request $request ) {
     global $wpdb;
     global $debug;
 
-    $log_file = dirname(__FILE__).'/logs/recreational.txt';
+    $log_file = dirname(__FILE__).'/log/recreational.txt';
     Analog::handler (Analog\Handler\File::init ($log_file));
 
     $input = file_get_contents( 'php://input');
@@ -129,7 +129,7 @@ function nrb_contact_us_serve_route_commercial_create( WP_REST_Request $request 
     global $wpdb;
     global $debug;
 
-    $log_file = dirname(__FILE__).'/logs/commercial.txt';
+    $log_file = dirname(__FILE__).'/log/commercial.txt';
     Analog::handler (Analog\Handler\File::init ($log_file));
 
     $input = file_get_contents( 'php://input');
